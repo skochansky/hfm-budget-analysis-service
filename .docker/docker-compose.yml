@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  hfm-budget-analysis-service:
+    networks:
+      - hfm-budget-analysis-service
+    container_name: hfm_budget_analysis_service
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile
+    command: "poetry run python src/manage.py runserver 0.0.0.0:8200"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db-hfm-budget-analysis-service
+    links:
+      - db-hfm-budget-analysis-service:db-hfm-budget-analysis-service
+  db-hfm-budget-analysis-service:
+    networks:
+      - hfm-budget-analysis-service
+    container_name: db_hfm_budget_analysis_service
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+networks:
+  hfm-budget-analysis-service:
+    external: true
